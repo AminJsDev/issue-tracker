@@ -26,6 +26,7 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
   } = useForm<IssueFormData>({
     resolver: zodResolver(createIssueSchema),
   });
+  
   const [error, setError] = useState("");
   const [isSubmiting, setSubmitting] = useState(false);
   const onSubmit = handleSubmit(async (data) => {

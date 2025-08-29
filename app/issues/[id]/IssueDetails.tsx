@@ -15,7 +15,7 @@ const IssueDetails = ({ issue }: { issue: Issue }) => {
       <Card className="prose mt-4">
         <ReactMarkdown>{issue.description}</ReactMarkdown>
       </Card>
-      ;
+      
     </>
   );
 };
