@@ -1,20 +1,25 @@
 "use client";
 
+import Spinner from "@/app/components/Spinner";
 import { AlertDialog, Button, Flex } from "@radix-ui/themes";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { useState } from "react";
+import { IoTrashOutline } from "react-icons/io5";
 
 const DeleteIssueButton = ({ issueId }: { issueId: number }) => {
   const [error, setError] = useState(false);
+  const [isDeleting, setDeleting] = useState(false);
   const router = useRouter();
 
   const handleDeleteIssue = async () => {
     try {
+      setDeleting(true);
       await axios.delete(`/api/issues/${issueId}`);
       router.push("/issues");
       router.refresh();
     } catch (err) {
+      setDeleting(false);
       setError(true);
     }
   };
@@ -22,7 +27,11 @@ const DeleteIssueButton = ({ issueId }: { issueId: number }) => {
     <>
       <AlertDialog.Root>
         <AlertDialog.Trigger>
-          <Button color="red">Delete Issue</Button>
+          <Button color="red" disabled={isDeleting}>
+            <IoTrashOutline />
+            Delete Issue
+            {isDeleting && <Spinner />}
+          </Button>
         </AlertDialog.Trigger>
         <AlertDialog.Content>
           <AlertDialog.Title>Confirm Deletion</AlertDialog.Title>
@@ -44,19 +53,22 @@ const DeleteIssueButton = ({ issueId }: { issueId: number }) => {
           </Flex>
         </AlertDialog.Content>
       </AlertDialog.Root>
-      <AlertDialog.Root open={error}>
-        <AlertDialog.Title>Error</AlertDialog.Title>
-        <AlertDialog.Description>
-          this issue could not be deleted.
-        </AlertDialog.Description>
-        <Button
-          onClick={() => setError(false)}
-          mt="2"
-          color="gray"
-          variant="soft"
-        >
-          OK
-        </Button>
+
+      <AlertDialog.Root open={error} onOpenChange={setError}>
+        <AlertDialog.Content>
+          <AlertDialog.Title>Error</AlertDialog.Title>
+          <AlertDialog.Description>
+            this issue could not be deleted.
+          </AlertDialog.Description>
+          <Button
+            onClick={() => setError(false)}
+            mt="2"
+            color="gray"
+            variant="soft"
+          >
+            OK
+          </Button>
+        </AlertDialog.Content>
       </AlertDialog.Root>
     </>
   );
