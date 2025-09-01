@@ -5,8 +5,11 @@ import { usePathname } from "next/navigation";
 import React from "react";
 import { FaBug } from "react-icons/fa";
 import classNames from "classnames";
+import { useSession } from "next-auth/react";
+import { Box } from "@radix-ui/themes";
 
 const NavBar = () => {
+  const { status, data: session } = useSession();
   const currentPath = usePathname();
   const links = [
     { label: "Dashboard", href: "/" },
@@ -20,19 +23,24 @@ const NavBar = () => {
       </Link>
       <ul className="flex space-x-6">
         {links.map((link) => (
-          <Link
-            key={link.href}
-            className={classNames({
-              "text-zinc-900": link.href === currentPath,
-              "text-zinc-500": link.href !== currentPath,
-              "hover:text-zinc-800 transition-colors": true,
-            })}
-            href={link.href}
-          >
-            {link.label}
-          </Link>
+          <li key={link.href}>
+            <Link
+              className={classNames({
+                "text-zinc-900": link.href === currentPath,
+                "text-zinc-500": link.href !== currentPath,
+                "hover:text-zinc-800 transition-colors": true,
+              })}
+              href={link.href}
+            >
+              {link.label}
+            </Link>
+          </li>
         ))}
       </ul>
+      <Box>
+        {status === "authenticated" && <Link href="api/auth/signout">Log out</Link>}
+        {status === "unauthenticated" && <Link href="api/auth/signin">Log in</Link>}
+      </Box>
     </nav>
   );
 };
